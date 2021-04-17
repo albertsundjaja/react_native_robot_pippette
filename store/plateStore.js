@@ -6,7 +6,7 @@ export const cmdReset = createAsyncThunk("plate/cmdReset",
     async (size, thunkAPI) => {
         let result = [];
         try {
-            result = robotLogic.initWellMatrix(size);
+            result = await robotLogic.initWellMatrix(size);
         } catch(ex) {
             return thunkAPI.rejectWithValue(ex.message);
         }
@@ -19,7 +19,7 @@ export const cmdPlace = createAsyncThunk("plate/cmdPlace",
     async (coordinate, thunkAPI) => {
         let result = [];
         try {
-            result = robotLogic.place(coordinate);
+            result = await robotLogic.place(coordinate);
         } catch(ex) {
             return thunkAPI.rejectWithValue(ex.message);
         }
@@ -56,7 +56,7 @@ export const plateSlice = createSlice({
         .addCase(cmdPlace.fulfilled, (state, action) => {
             state.wellMatrix = action.payload;
         })
-        .addCase(cmdPlace.rejected, (state, actions) => {
+        .addCase(cmdPlace.rejected, (state, action) => {
             state.cmdError = true;
             state.errorMsg = action.payload;
         })

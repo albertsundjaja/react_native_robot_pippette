@@ -3,9 +3,12 @@
  */
  
 import { matrixToCartesianCoor, cartesianToMatrixCoor } from '../utils/matrixUtil';
+import _, { conformsTo } from 'lodash';
 
 // store the current state of the matrix
 let currentMatrix = [];
+// store the matrix max position [i, j];
+let matrixMax = [0, 0];
 
 // store the flag whether robot has issued first PLACE command
 let placed = false;
@@ -31,30 +34,46 @@ const initWellMatrix = (size) => {
         }
         matrix.push(row);
     }
+    // matrix index starts at 0 hence size -1
+    matrixMax = [size - 1, size - 1];
     currentMatrix = matrix;
     placed = false;
-    return matrix;
+    return _.cloneDeep(matrix);
 }
 
 /**
  * Place the robot in the coordinate
  * @param {object} coor cartesian coordinate in the form of {x, y} 
  */
-const place = (coor) => {
-    if (isOutOfBound(coor, currentMatrix)) {
+const place = async (coorData) => {
+    if (isOutOfBound(coorData)) {
         throw new Error('Out of bound, please check x and y.');
     }
 
-    let [matrixI, matrixJ] = cartesianToMatrixCoor(coor.x, coor.y, currentMatrix.length);
+    // make copy since we are not supposed to mutate the react state in this simulated backend
+    let coor = {...coorData}
+    // convert to int
+    try {
+        coor.x = parseInt(coor.x);
+        coor.y = parseInt(coor.y);
+    } catch (ex) {
+        throw new Error('x and y need to be valid integer.')
+    }
+    
 
+    placed = true;
+
+    let [matrixI, matrixJ] = cartesianToMatrixCoor(coor.x, coor.y, matrixMax[0]);
     // remove old robot position
-    currentMatrix[robotPosition.i, robotPosition.j].robot = false;
+    if (robotPosition.i != -1) {
+        currentMatrix[robotPosition.i][robotPosition.j].robot = false;
+    }
     // place robot in new position
-    currentMatrix[matrixI, matrixJ].robot = true;
+    currentMatrix[matrixI][matrixJ]["robot"] = true;
     // store robot position
     robotPosition = {i: matrixI, j: matrixJ};
 
-    return currentMatrix;
+    return _.cloneDeep(currentMatrix);
 }
 
 /**
@@ -63,7 +82,10 @@ const place = (coor) => {
  * @param {array} matrix the array matrix
  * @returns {boolean}
  */
-const isOutOfBound = (coor, matrix) => {
+const isOutOfBound = (coor) => {
+    if (coor.x < 0 || coor.y < 0 || coor.x > matrixMax[0] || coor.y > matrixMax[1]) {
+        return true;
+    }
     return false
 }
 
