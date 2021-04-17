@@ -3,13 +3,13 @@ import { useSelector, useDispatch } from 'react-redux';
 import { View, StyleSheet, Text } from 'react-native';
 import { Button, Dialog, Portal, TextInput } from 'react-native-paper';
 
-import { cmdPlace, cmdMove } from '../store/plateStore';
+import { cmdPlace, cmdMove, cmdDetect, cmdDrop, cmdReport, cmdReset } from '../store/plateStore';
 
 const Control = (props) => {
     const dispatch = useDispatch();
     const currMatrix = useSelector(state => state.plate.wellMatrix);
     const cmdError = useSelector(state => state.plate.cmdError);
-    const errorMsg = useSelector(state => state.plate.errorMsg);
+    const feedbackMsg = useSelector(state => state.plate.feedbackMsg);
     const [showPlaceDialog, setShowPlaceDialog] = useState(false);
     const [placeCoor, setPlaceCoor] = useState({x: "0", y: "0"});
     const sendCmdPlace = () => {
@@ -18,6 +18,18 @@ const Control = (props) => {
     }   
     const sendCmdMove = (direction) => {
         dispatch(cmdMove(direction));
+    }
+    const sendCmdDrop = () => {
+        dispatch(cmdDrop());
+    }
+    const sendCmdDetect = () => {
+        dispatch(cmdDetect());
+    }
+    const sendCmdReport = () => {
+        dispatch(cmdReport());
+    }
+    const sendCmdReset = () => {
+        dispatch(cmdReset(5));
     }
     return (
         <View style={styles.container}>
@@ -36,10 +48,10 @@ const Control = (props) => {
             <View style={styles.control}>
                 <View style={styles.controlLeft}>
                     <Button style={styles.btnCmd} mode="outlined" onPress={() => setShowPlaceDialog(true)}>Place</Button>
-                    <Button style={styles.btnCmd} mode="outlined">Detect</Button>
-                    <Button style={styles.btnCmd} mode="outlined">Drop</Button>
-                    <Button style={styles.btnCmd} mode="outlined">Report</Button>
-                    <Button style={styles.btnCmd} mode="outlined" onPress={() => console.log(currMatrix)}>check</Button>
+                    <Button style={styles.btnCmd} mode="outlined" onPress={() => sendCmdDetect()}>Detect</Button>
+                    <Button style={styles.btnCmd} mode="outlined" onPress={() => sendCmdDrop()}>Drop</Button>
+                    <Button style={styles.btnCmd} mode="outlined" onPress={() => sendCmdReport()}>Report</Button>
+                    <Button style={styles.btnCmd} mode="outlined" onPress={() => sendCmdReset()}>Reset</Button>
                 </View>
                 <View style={styles.controlRight}>
                     <View style={styles.controlRightMove}>
@@ -56,7 +68,7 @@ const Control = (props) => {
                         </View>
                     </View>
                     <View style={styles.controlRightErr}>
-                        <Text style={styles.errorMsg}>{errorMsg}</Text>
+                        <Text style={[styles.feedbackMsg, {color: cmdError ? "red" : "black"}]}>{feedbackMsg}</Text>
                     </View>
                 </View>
             </View>
@@ -104,9 +116,8 @@ const styles = StyleSheet.create({
     btnCmd: {
         margin: 5
     },
-    errorMsg: {
-        fontSize: 15,
-        color: "red"
+    feedbackMsg: {
+        fontSize: 15
     }
 })
 

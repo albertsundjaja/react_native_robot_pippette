@@ -76,6 +76,7 @@ const place = async (coorData) => {
     return _.cloneDeep(currentMatrix);
 }
 
+// move the robot 1 step 
 const move = async (direction) => {
     if (!placed) {
         throw new Error("Please issue a PLACE command first.");
@@ -112,7 +113,57 @@ const move = async (direction) => {
     }
 
     return _.cloneDeep(newMatrix);
+}
 
+// drop solution
+const drop = () => {
+    if (!placed) {
+        throw new Error("Please issue a PLACE command first.");
+    }
+
+    // drop a solution in the well the robot is on
+    currentMatrix[robotPosition.i][robotPosition.j].filled = true;
+
+    return _.cloneDeep(currentMatrix);
+}
+
+// detect well
+const detect = () => {
+    if (!placed) {
+        throw new Error("Please issue a PLACE command first.");
+    }
+    
+    let filled = currentMatrix[robotPosition.i][robotPosition.j].filled;
+    switch (filled) {
+        case true:
+            return "FULL";
+        case false:
+            return "EMPTY";
+        default:
+            // TODO: this can't happen at the moment
+            return "ERR";
+    }
+}
+
+const report = () => {
+    if (!placed) {
+        throw new Error("Please issue a PLACE command first.");
+    }
+
+    // get current position
+    let [x, y] = matrixToCartesianCoor(robotPosition.i, robotPosition.j, matrixMax[0]);
+
+    let status = "ERR";
+    let filled = currentMatrix[robotPosition.i][robotPosition.j].filled;
+    switch (filled) {
+        case true:
+            status = "FULL";
+            break;
+        case false:
+            status = "EMPTY";
+            break;
+    }
+    return `${x},${y},${status}`;
 }
 
 /**
@@ -132,5 +183,8 @@ const isOutOfBound = (coor) => {
 module.exports = {
     initWellMatrix,
     place,
-    move
+    move,
+    drop,
+    detect,
+    report
 }
