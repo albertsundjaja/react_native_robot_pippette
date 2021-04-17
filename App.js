@@ -2,7 +2,7 @@ import React from 'react';
 import { Provider as StoreProvider } from 'react-redux';
 import store from './store/store';
 import { Provider as PaperProvider } from 'react-native-paper';
-import Main from './components/Main';
+import Main from './pages/Main';
 
 export default function App() {
   return (
