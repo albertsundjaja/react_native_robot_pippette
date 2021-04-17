@@ -11,6 +11,8 @@ It has several different commands:
 * DROP : drop a liquid in the well under the robot
 * REPORT : report the position and the status of the well the robot is currently on
 
+![demo](https://github.com/albertsundjaja/react_native_robot_pippette/blob/main/docs/demo.gif)
+
 ## Installation
 
 **Install `expo` ( if not yet installed )**
