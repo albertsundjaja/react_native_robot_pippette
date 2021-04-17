@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { View, StyleSheet, Text } from 'react-native';
 import { Button, Dialog, Portal, TextInput } from 'react-native-paper';
 
-import { cmdPlace } from '../store/plateStore';
+import { cmdPlace, cmdMove } from '../store/plateStore';
 
 const Control = (props) => {
     const dispatch = useDispatch();
@@ -16,6 +16,9 @@ const Control = (props) => {
         dispatch(cmdPlace(placeCoor));
         setShowPlaceDialog(false);
     }   
+    const sendCmdMove = (direction) => {
+        dispatch(cmdMove(direction));
+    }
     return (
         <View style={styles.container}>
             <Portal>
@@ -44,24 +47,19 @@ const Control = (props) => {
                             <Text>MOVE</Text>
                         </View>
                         <View style={styles.moveTop}>
-                            <Button style={styles.btnMove} mode="contained">N</Button>
+                            <Button style={styles.btnMove} mode="contained" onPress={() => sendCmdMove('N')}>N</Button>
                         </View>
                         <View style={styles.moveBot}>
-                            <Button style={styles.btnMove} mode="contained">W</Button>
-                            <Button style={styles.btnMove} mode="contained">S</Button>
-                            <Button style={styles.btnMove} mode="contained">E</Button>
+                            <Button style={styles.btnMove} mode="contained" onPress={() => sendCmdMove('W')}>W</Button>
+                            <Button style={styles.btnMove} mode="contained" onPress={() => sendCmdMove('S')}>S</Button>
+                            <Button style={styles.btnMove} mode="contained" onPress={() => sendCmdMove('E')}>E</Button>
                         </View>
                     </View>
                     <View style={styles.controlRightErr}>
                         <Text style={styles.errorMsg}>{errorMsg}</Text>
                     </View>
                 </View>
-                
             </View>
-            <View>
-                <Text>Message</Text>
-            </View>
-            
         </View>
     )
 }

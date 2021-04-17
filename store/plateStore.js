@@ -28,6 +28,20 @@ export const cmdPlace = createAsyncThunk("plate/cmdPlace",
     }
 )
 
+// send MOVE command
+export const cmdMove = createAsyncThunk("plate/cmdMove", 
+    async (direction, thunkAPI) => {
+        let result = [];
+        try {
+            result = await robotLogic.move(direction);
+        } catch (ex) {
+            return thunkAPI.rejectWithValue(ex.message);
+        }
+        return result;
+    }
+)
+
+
 export const plateSlice = createSlice({
     name: "plate",
     initialState: {
@@ -57,6 +71,17 @@ export const plateSlice = createSlice({
             state.wellMatrix = action.payload;
         })
         .addCase(cmdPlace.rejected, (state, action) => {
+            state.cmdError = true;
+            state.errorMsg = action.payload;
+        })
+        .addCase(cmdMove.pending, (state, action) => {
+            state.cmdError = false;
+            state.errorMsg = false;
+        })
+        .addCase(cmdMove.fulfilled, (state, action) => {
+            state.wellMatrix = action.payload;
+        })
+        .addCase(cmdMove.rejected, (state, action) => {
             state.cmdError = true;
             state.errorMsg = action.payload;
         })

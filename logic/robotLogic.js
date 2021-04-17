@@ -76,9 +76,49 @@ const place = async (coorData) => {
     return _.cloneDeep(currentMatrix);
 }
 
+const move = async (direction) => {
+    if (!placed) {
+        throw new Error("Please issue a PLACE command first.");
+    }
+
+    let xChange = 0;
+    let yChange = 0;
+    switch (direction) {
+        case 'N':
+            yChange = 1;
+            break;
+        case 'W':
+            xChange = -1;
+            break;
+        case 'S':
+            yChange = -1;
+            break;
+        case 'E':
+            xChange = 1;
+            break;
+        default:
+            throw new Error("Invalid move. Valid move is N, W, S or E.");
+    }
+    
+    // current robot position
+    let [x, y] = matrixToCartesianCoor(robotPosition.i, robotPosition.j, matrixMax[0]);
+    let newPosition = {x: x + xChange, y: y + yChange};
+
+    let newMatrix = currentMatrix;
+    try {
+        newMatrix = await place(newPosition)
+    } catch (ex) {
+        throw ex;
+    }
+
+    return _.cloneDeep(newMatrix);
+
+}
+
 /**
  * Check if coordinate is out of bound in the matrix
- * @param {object} coor cartesian coordinate in the form of {x, y}
+ * Note that it doesn't matter if the given coordinate is in cartesian/matrix form as they have the same bound in square condition
+ * @param {object} coor cartesian/matrix coordinate in the form of {x, y}
  * @param {array} matrix the array matrix
  * @returns {boolean}
  */
@@ -91,5 +131,6 @@ const isOutOfBound = (coor) => {
 
 module.exports = {
     initWellMatrix,
-    place
+    place,
+    move
 }
